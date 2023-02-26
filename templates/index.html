@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.3.js" integrity="sha256-nQLuAZGRRcILA+6dMBOvcRh5Pe310sBpanc6+QBmyVM=" crossorigin="anonymous"></script>
+    <title>Document</title>
+</head>
+<body>
+    <form id="createShortUrlForm" method="POST" onsubmit="CreateShort();return false;">
+        {% csrf_token %}
+        <input type="text" name="url" id="fullUrl" placeholder="URL입력('http://, https:// 포함')">
+        <button type="button" onclick="CreateShort()">Short URL 생성</button>
+    </form>
+    <div id="message"></div>
+    <div id="newUrl"></div>
+    <script>
+        function checkUrl(strUrl){
+            let expUrl = /^http[s]?:\/\/([\S]{3,})/i ;
+            return expUrl.test(strUrl);
+        }
+        function CreateShort(){
+            
+            let full = document.getElementById('fullUrl');
+            if (!checkUrl(full.value)){
+                alert("값을 확인해 주세요\n('http://, https:// 포함')\n"+full.value);
+                full.focus();
+                return false;
+            };
+            let host = window.location.host+'/';
+            $.ajax({
+                url : '/short/create',
+                method: 'POST',
+                data: {'url': full.value},
+                success: function(res){
+                    if (res['result']){
+                        $('#message').text("성공");
+                        $('#newUrl').text("단축 URL: " + host + res['new_url']);
+                    }else{
+                        alert("다시 시도해 주세요");
+                        full.value('');
+                        full.focus();
+                    }
+
+                }
+            })
+        }
+    </script>
+</body>
+</html>

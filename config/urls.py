@@ -14,8 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from shorts import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('boards/', include('boards.urls')),
+    # path('api-auth/', include('rest_framework.urls')),
+    path('short/', include('shorts.urls')),
+    path('<str:slug>', views.go_shorturl, name="go")
 ]
